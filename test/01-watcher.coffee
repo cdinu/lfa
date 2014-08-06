@@ -20,13 +20,17 @@ describe 'Watcher', ->
 
         moduleName = __dirname + '/watcher-fork.conf'
         if process.env.running_under_istanbul
-          forkArgs = [__dirname + '/../node_modules/istanbul/lib/cli.js', 'cover', '--report', 'none', '--dir', path.resolve(__dirname + '/../coverage/watch'), moduleName + '.js', '--', projPath]
+          forkArgs = [__dirname + '/../node_modules/istanbul/lib/cli.js', 'cover', '--report', 'none', '--print', 'none', '--dir', path.resolve(__dirname + '/../coverage/watch'), moduleName + '.js', '--', projPath]
         else
           forkArgs = [moduleName, projPath]
 
         child = child_process.spawn('node', forkArgs, {
           stdio: [null, null, null, 'ipc']
         })
+
+        #For debugging:
+        #child.stderr.pipe process.stderr
+        #child.stdout.pipe process.stdout
 
         unbind = -> child.removeListener('message', handler)
         handler = (msg) ->

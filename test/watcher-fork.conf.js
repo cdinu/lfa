@@ -1,10 +1,16 @@
 var lfa = require('../');
 
 var proj = new lfa.Project(process.argv[2]);
+
+var oldSend = process.send;
+process.send = function(msg) {
+  process.stderr.write(JSON.stringify(msg));
+  if (oldSend) {
+    oldSend.call(process, msg);
+  }
+};
+
 proj.loaded.done(function () {
-  /*process.send = function(msg) {
-    process.stderr.write(JSON.stringify(msg));
-  };*/
   process.send({msg: 'load-done'});
 
   proj.on('compile-start', function() {
